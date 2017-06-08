@@ -10,6 +10,7 @@ package object immortalcombat {
     ((alpha & 0xFF) << 24) | ((red & 0xFF) << 16) | ((green & 0xFF) << 8) | ((blue & 0xFF) << 0)
 
   implicit class PixelWithComponents(val pixel: Pixel) extends AnyVal {
+    def argb = (alpha, red, green, blue)
     def alpha: ColorComponent = (pixel >> 24) & 0x000000FF
     def red: ColorComponent = (pixel >> 16) & 0x000000FF
     def green: ColorComponent = (pixel >> 8 ) & 0x000000FF
