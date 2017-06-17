@@ -1,4 +1,4 @@
-package name.nikiforo.immortalcombat
+package name.nikiforo.ssimm
 
 /**
   * Filter represents computation, that can be applied to an image, producing another Image

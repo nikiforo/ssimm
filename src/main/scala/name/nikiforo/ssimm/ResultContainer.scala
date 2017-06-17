@@ -1,4 +1,4 @@
-package name.nikiforo.immortalcombat
+package name.nikiforo.ssimm
 
 /**
   * Data, produced by application of a filter should be stored somewhere.

@@ -1,4 +1,4 @@
-package name.nikiforo.immortalcombat
+package name.nikiforo.ssimm
 
 import java.awt.image.BufferedImage
 import java.nio.file.{Files, Path}

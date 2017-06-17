@@ -1,4 +1,4 @@
-package name.nikiforo.immortalcombat
+package name.nikiforo.ssimm
 
 sealed trait OutputFormat { def name: String }
 object JPEG extends OutputFormat { val name = "jpeg" }

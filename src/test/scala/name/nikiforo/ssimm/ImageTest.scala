@@ -1,4 +1,4 @@
-package name.nikiforo.immortalcombat
+package name.nikiforo.ssimm
 
 import java.nio.file.Paths
 

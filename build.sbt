@@ -1,4 +1,4 @@
-name := "immortalcombat"
+name := "ssimm"
 
 organization := "name.nikiforo"
 

@@ -2,7 +2,7 @@ package name.nikiforo
 
 import java.awt.image.BufferedImage
 
-package object immortalcombat {
+package object ssimm {
   type Pixel = Int
   type ColorComponent = Int
 
