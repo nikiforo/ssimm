@@ -4,6 +4,7 @@ import java.awt.image.BufferedImage
 import java.nio.file.{Files, Path}
 import javax.imageio.ImageIO
 
+/** The simplest image representation */
 trait Image {
   def width: Int
   def height: Int

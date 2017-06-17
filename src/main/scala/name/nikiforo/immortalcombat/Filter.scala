@@ -1,9 +1,16 @@
 package name.nikiforo.immortalcombat
 
+/**
+  * Filter represents computation, that can be applied to an image, producing another Image
+  * */
 trait Filter {
   def apply(image: Image)(implicit resultContainer: ResultContainer): Image
 }
 
+/**
+  * Easy, naive and slow convolution filter, that has a kernel, that is applied to a pixel with neighbours.
+  * Suppose this filter has a n*m kernel and applied to an image x*y, then a result image will have x-(n-1) * y-(m-1) size
+  * */
 trait SlowKernelFilter extends Filter {
   protected def Kernel: Array[Array[Int]]
   protected def Divisor: Int
@@ -87,6 +94,8 @@ object LaplacianOfGaussianFilter extends SlowKernelFilter {
   override val MiddleIndexY = 4
 }
 
+/**
+  * Transforms each pixel with transform function */
 trait SinglePixelFilter extends Filter {
   protected def transform(pixel: Pixel): Pixel
   override def apply(image: Image)(implicit resultContainer: ResultContainer): Image = {
@@ -104,6 +113,18 @@ trait SinglePixelFilter extends Filter {
 
 object NoFilter extends SinglePixelFilter {
   override def transform(pixel: Pixel) = pixel
+}
+
+object RedComponentFilter extends SinglePixelFilter {
+  override def transform(pixel: Pixel) = getPixel(pixel.alpha, pixel.red, 0, 0)
+}
+
+object GreenComponentFilter extends SinglePixelFilter {
+  override def transform(pixel: Pixel) = getPixel(pixel.alpha, 0, pixel.green, 0)
+}
+
+object BlueComponentFilter extends SinglePixelFilter {
+  override def transform(pixel: Pixel) = getPixel(pixel.alpha, 0, 0, pixel.blue)
 }
 
 object GrayLightnessFilter extends SinglePixelFilter {

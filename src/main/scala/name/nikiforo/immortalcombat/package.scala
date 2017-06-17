@@ -57,6 +57,7 @@ package object immortalcombat {
     }
   }
 
+  /** Outer array(or arrays) contains arrays, that corresponds to a columns */
   implicit class Array2ToImage(val array: Array[Array[Pixel]]) extends AnyVal {
     def toImg = new Image {
       def width = array.length
