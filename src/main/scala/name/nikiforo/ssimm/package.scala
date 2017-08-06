@@ -6,6 +6,19 @@ package object ssimm {
   type Pixel = Int
   type ColorComponent = Int
 
+  case class SplittedPixel(alpha: ColorComponent, red: ColorComponent, green: ColorComponent, blue: ColorComponent) {
+    def argb = (alpha, red, green, blue)
+    def this(arg: (ColorComponent, ColorComponent, ColorComponent, ColorComponent)) = this(arg._1, arg._2, arg._3, arg._4)
+    def this(pixel: Pixel) = this(pixel.argb)
+    def toPixel = getPixel(alpha, red, green, blue)
+    def manhattanDistance(other: (Double, Double, Double, Double)) = other match { case(a, r, g, b) =>
+      math.abs(alpha - a) + math.abs(red - r) + math.abs(green - g) + math.abs(blue - b)
+    }
+    def manhattanDistance(other: SplittedPixel) =
+      math.abs(alpha - other.alpha) + math.abs(red - other.red) +
+        math.abs(green - other.green) + math.abs(blue - other.blue)
+  }
+
   def getPixel(alpha: ColorComponent, red: ColorComponent, green: ColorComponent, blue: ColorComponent) =
     ((alpha & 0xFF) << 24) | ((red & 0xFF) << 16) | ((green & 0xFF) << 8) | ((blue & 0xFF) << 0)
 

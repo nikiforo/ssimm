@@ -5,7 +5,7 @@ import java.nio.file.Paths
 /** Is used to see what is the result of developed filters */
 object Main {
   def main(args: Array[String]): Unit = {
-    val img = Image.from(Paths.get("src/main/resources/aGirl.jpg"))
+    val img = Image.from(Paths.get("src/main/resources/lop2.jpg"))
 
     implicit val resultContainer = OneDimArray
     val noFilter = img.applyFilter(NoFilter)
@@ -18,6 +18,7 @@ object Main {
     val red = img.applyFilter(RedComponentFilter)
     val green = img.applyFilter(GreenComponentFilter)
     val blue = img.applyFilter(BlueComponentFilter)
+    val clustered = img.applyFilter(new KMeansFilter { override protected val clusterAmount = 25 })
 
     val outputDir = "out"
 
@@ -32,5 +33,6 @@ object Main {
     red.to(Paths.get(outputDir, "red.png"), PNG)
     green.to(Paths.get(outputDir, "green.png"), PNG)
     blue.to(Paths.get(outputDir, "blue.png"), PNG)
+    clustered.to(Paths.get(outputDir, "clustered.png"), PNG)
   }
 }
