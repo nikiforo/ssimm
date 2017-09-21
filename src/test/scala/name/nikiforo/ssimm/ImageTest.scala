@@ -3,6 +3,7 @@ package name.nikiforo.ssimm
 import java.nio.file.Paths
 
 import com.google.common.jimfs.{Configuration, Jimfs}
+import name.nikiforo.ssimm.filter.{Gaussian5SlowKernelFilter, GrayAverageFilter, NoFilter}
 import org.scalatest.FunSuite
 
 class ImageTest extends FunSuite {
@@ -101,7 +102,7 @@ class ImageTest extends FunSuite {
       i
     }
 
-    val withGauss = img.applyFilter(Gaussian5Filter)
+    val withGauss = img.applyFilter(Gaussian5SlowKernelFilter)
     assert(withGauss.width == 1)
     assert(withGauss.height == 1)
     val res = 44 //I've computed it using calculator

@@ -5,6 +5,8 @@ import java.io.{InputStream, OutputStream}
 import java.nio.file.{Files, Path}
 import javax.imageio.ImageIO
 
+import name.nikiforo.ssimm.filter.Filter
+
 /** The simplest image representation */
 trait Image {
   def width: Int

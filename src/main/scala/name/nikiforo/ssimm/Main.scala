@@ -2,6 +2,8 @@ package name.nikiforo.ssimm
 
 import java.nio.file.Paths
 
+import name.nikiforo.ssimm.filter._
+
 /** Is used to see what is the result of developed filters */
 object Main {
   def main(args: Array[String]): Unit = {
@@ -12,9 +14,9 @@ object Main {
     val lightness = img.applyFilter(GrayLightnessFilter)
     val average = img.applyFilter(GrayAverageFilter)
     val luminosity = img.applyFilter(GrayLuminosityFilter)
-    val gaus5 = img.applyFilter(Gaussian5Filter)
-    val log = img.applyFilter(GrayAverageFilter).applyFilter(LaplacianOfGaussianFilter)
-    val lapl = img.applyFilter(GrayAverageFilter).applyFilter(LaplacianFilter)
+    val gaus5 = img.applyFilter(Gaussian5SlowKernelFilter)
+    val log = img.applyFilter(GrayAverageFilter).applyFilter(LaplacianOfGaussianSlowKernelFilter)
+    val lapl = img.applyFilter(GrayAverageFilter).applyFilter(LaplacianSlowKernelFilter)
     val red = img.applyFilter(RedComponentFilter)
     val green = img.applyFilter(GreenComponentFilter)
     val blue = img.applyFilter(BlueComponentFilter)
