@@ -1,1 +1,4 @@
 PerfomanceTest(1506023456378,aGirl.jpg,Some(20),Some(28),Some(530),Some(12951))
+PerfomanceTest(1506024736138,lop2.jpg,Some(77),Some(105),Some(2643),Some(117256))
+PerfomanceTest(1506106906928,aGirl.jpg,Some(12),Some(22),Some(669),Some(4518))
+PerfomanceTest(1506107514335,lop2.jpg,Some(79),Some(160),Some(3128),Some(49720))

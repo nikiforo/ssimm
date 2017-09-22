@@ -16,16 +16,25 @@ trait KMeansFilter extends Filter {
     val seq = for {
       x <- 0 until image.width
       y <- 0 until image.height
-    } yield image(x, y)
+      pixel = image(x,y)
+      (a, r, g, b) = pixel.argb
+      colorComponent <- Seq(a, r, g, b)
+    } yield colorComponent.asInstanceOf[Int]
 
-    val x = KmeansClasterizator.clasterize(clusterAmount, seq.toList.map(_.argb))
+    val x = KmeansClasterizator.clasterize(clusterAmount, seq.toArray)
 
     val getValue = (for
     {
       cluster <- x
-      (a, r, g, b) = cluster.center
+      c = cluster.center
+      a = c.a; r = c.r; g = c.g; b = c.b
       pixel = getPixel(a.toInt, r.toInt, g.toInt, b.toInt)
-      (aPoint, rPoint, gPoint, bPoint) <- cluster.points
+      i <- 0 until (cluster.points.length / 4)
+      ind = i * 4
+      aPoint = cluster.points(ind)
+      rPoint = cluster.points(ind + 1)
+      gPoint = cluster.points(ind + 2)
+      bPoint = cluster.points(ind + 3)
     } yield getPixel(aPoint, rPoint, gPoint, bPoint) -> pixel).toMap
 
     val mutableImg = resultContainer(image.width, image.height)

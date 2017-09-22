@@ -3,7 +3,7 @@ package name.nikiforo.ssimm
 import java.nio.file.Paths
 
 import com.google.common.jimfs.{Configuration, Jimfs}
-import name.nikiforo.ssimm.filter.{Gaussian5SlowKernelFilter, GrayAverageFilter, NoFilter}
+import name.nikiforo.ssimm.filter.{Gaussian5SlowKernelFilter, GrayAverageFilter, KMeansFilter, NoFilter}
 import org.scalatest.FunSuite
 
 class ImageTest extends FunSuite {
@@ -107,7 +107,39 @@ class ImageTest extends FunSuite {
     assert(withGauss.height == 1)
     val res = 44 //I've computed it using calculator
     assert(withGauss(0, 0) == getPixel(alpha, res, res, res))
+  }
 
+  test("KMeansClusterer single pixel") {
+    implicit val resultContainer = OneDimArray
+    val originalPixel = getPixel(alpha, 10, 20, 30)
 
+    val img: Image = {
+      val i = Image.zerosMutable(1, 1)
+      i.set(0, 0, originalPixel)
+      i
+    }
+
+    val clusterized = img.applyFilter(new KMeansFilter { override protected val clusterAmount = 1 })
+
+    assert(clusterized(0,0) == originalPixel)
+  }
+
+  test("KMeansClusterer single cluster") {
+    implicit val resultContainer = OneDimArray
+    val originalPixel1 = getPixel(alpha, 10, 20, 30)
+    val originalPixel2 = getPixel(alpha, 30, 20, 10)
+
+    val img: Image = {
+      val i = Image.zerosMutable(2, 2)
+      i.set(0, 0, originalPixel1)
+      i.set(0, 1, originalPixel1)
+      i.set(1, 0, originalPixel2)
+      i.set(1, 1, originalPixel2)
+      i
+    }
+
+    val clusterized = img.applyFilter(new KMeansFilter { override protected val clusterAmount = 1 })
+
+    assert(clusterized(0,0) == getPixel(alpha, 20, 20, 20))
   }
 }

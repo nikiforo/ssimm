@@ -2,79 +2,90 @@ package name.nikiforo.ssimm
 
 import scala.annotation.tailrec
 import scala.collection.mutable
+import scala.collection.mutable.ArrayBuffer
 import scala.util.Random
+
+case class Center(a: Float, r: Float, g: Float, b: Float) {
+  private val epsilon = 0.5
+
+  def manhDist(a: Int, r: Int, g: Int, b: Int): Float =
+    math.abs(this.a - a) + math.abs(this.r - r) + math.abs(this.g - g) + math.abs(this.b - b)
+
+  def isClose(other: Center) =
+    math.abs(this.a - other.a) < epsilon &&
+      math.abs(this.r - other.r) < epsilon &&
+      math.abs(this.g - other.g) < epsilon &&
+      math.abs(this.b - other.b) < epsilon
+}
+
+class Sum(var a: Int, var r: Int, var g: Int, var b: Int) {
+  def update(a: Int, r: Int, g: Int, b: Int): Unit = {
+    this.a += a
+    this.r += r
+    this.g += g
+    this.b += b
+  }
+
+  def getCenter(length: Int) = Center(this.a.toFloat / length, this.r.toFloat / length, this.g.toFloat / length, this.b.toFloat / length)
+}
+
+case class Cluster(center: Center, sum: Sum, points: scala.collection.mutable.ArrayBuffer[Int])
 
 object KmeansClasterizator
 {
-  type Point = (Int, Int, Int, Int)
-  type Center = (Double, Double, Double, Double)
-  type Sum = (Long, Long, Long, Long)
+  def emptySum = new Sum(0, 0, 0, 0)
 
-  private val epsilon = 0.5
-  private def isClose(c1: Center, c2: Center) = {
-    val (a1, r1, g1, b1) = c1
-    val (a2, r2, g2, b2) = c2
-
-    math.abs(a1 - a2) < epsilon &&
-      math.abs(r1 - r2) < epsilon &&
-      math.abs(g1 - g2) < epsilon &&
-      math.abs(b1 - b2) < epsilon
-  }
-
-  private def distance(c: Center, p: Point) = {
-    val (aCenter, rCenter, gCenter, bCenter) = c
-    val (aPoint, rPoint, gPoint, bPoint) = p
-    math.abs(aCenter - aPoint) + math.abs(rCenter - rPoint) + math.abs(gCenter - gPoint) + math.abs(bCenter - bPoint)
-  }
-
-  private def divide(sum: Sum, divider: Int) = {
-    val (a, r, g, b) = sum
-    (a.toDouble / divider, r.toDouble / divider, g.toDouble / divider, b.toDouble / divider)
-  }
-
-  private def toDouble(point: Point) = {
-    val (aPoint, rPoint, gPoint, bPoint) = point
-    (aPoint.toDouble, rPoint.toDouble, gPoint.toDouble, bPoint.toDouble)
-  }
-
-  val EmptySum = (0L, 0L, 0L, 0L)
-
-  case class Cluster(center: Center, sum: Sum, points: List[Point])
-
-  def clasterize[T](clusterAmount: Int, points: List[Point]) = {
-    @tailrec
-    def iterate(prevClusters: IndexedSeq[Cluster]): IndexedSeq[Cluster] = {
-      val emptyClusters = prevClusters.map { c =>
-        Cluster(c.center, EmptySum, List.empty)
-      }
-
-      var preFilledClusters = emptyClusters
-      points.foreach { p =>
-        val closest = preFilledClusters.minBy { c => distance(c.center, p) }
-        val (aCluster, rCluster, gCluster, bCluster) = closest.sum
-        val (aPoint, rPoint, gPoint, bPoint) = p
-        val newSum = (aCluster + aPoint, rCluster + rPoint, gCluster + gPoint, bCluster + bPoint)
-        val newPoints = p +: closest.points
-
-        val ind = preFilledClusters.indexOf(closest)
-        preFilledClusters = preFilledClusters.updated(ind, Cluster(closest.center, newSum, newPoints))
-      }
-
-      val filledClusters = preFilledClusters.map(c => c.copy(center = divide(c.sum, c.points.length)))
-
-      val allNotMoved = prevClusters.zip(filledClusters).map { case (prev, curr) => isClose(prev.center, curr.center) }.reduce(_ && _)
-      if (allNotMoved) filledClusters
-      else iterate(filledClusters)
-    }
-
+  def clasterize[T](clusterAmount: Int, points: Array[Int]) = {
     val length = points.length
+    val pixelLength = length / 4
+    val lengthPerCluster = length / clusterAmount
 
-    val initialCentroids = {
-      var set = mutable.Set[Point]()
-      while (set.size < clusterAmount) set += points(Random.nextInt(length))
-      set.map(p => Cluster(toDouble(p), EmptySum, List.empty)).to[Vector]
+    @tailrec
+    def iterate(centers: IndexedSeq[Center]): IndexedSeq[Cluster] = {
+      val clusters = centers.map { c =>
+        Cluster(c, emptySum, new ArrayBuffer[Int](lengthPerCluster))
+      }
+
+      for {
+        i <- 0 until pixelLength
+        ind = i * 4
+      } {
+        val a = points(ind)
+        val r = points(ind + 1)
+        val g = points(ind + 2)
+        val b = points(ind + 3)
+
+        val closest = clusters.minBy { _.center.manhDist(a, r, g, b) }
+        closest.sum.update(a, r, g, b)
+        closest.points += a
+        closest.points += r
+        closest.points += g
+        closest.points += b
+      }
+
+      val newCenters = clusters.map { cluster =>
+        cluster.sum.getCenter(cluster.points.length / 4)
+      }
+
+      val allNotMoved = centers.zip(newCenters).forall{ case (prev, curr) => prev.isClose(curr) }
+      if(allNotMoved) clusters.zip(newCenters).map { case(cluster, cntr) => cluster.copy(center = cntr) }
+      else iterate(newCenters)
     }
 
-    iterate(initialCentroids)
+    /* Here can be some better heuristic to find initial centers */
+    val initialCenters = {
+      val set = mutable.Set[Center]()
+      while (set.size < clusterAmount){
+        val ind = Random.nextInt(pixelLength) * 4
+        val a = points(ind)
+        val r = points(ind + 1)
+        val g = points(ind + 2)
+        val b = points(ind + 3)
+        set += Center(a, r, g, b)
+      }
+      set.to[Vector]
+    }
+
+    iterate(initialCenters)
   }
 }
