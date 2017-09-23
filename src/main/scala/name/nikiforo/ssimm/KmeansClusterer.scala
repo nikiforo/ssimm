@@ -144,10 +144,7 @@ object KmeansClusterer {
       val newCenters = clusters.map(cluster => cluster.sum.getCenter.getOrElse(cluster.center))
 
       val allNotMoved = centers.zip(newCenters).forall{ case (prev, curr) => prev.isClose(curr) }
-      if(allNotMoved) {
-        println("it: " + iteration)
-        newCenters
-      }
+      if(allNotMoved) newCenters
       else iterate(iteration + 1, newCenters)
     }
 
