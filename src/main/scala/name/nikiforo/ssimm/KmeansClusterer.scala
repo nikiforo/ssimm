@@ -2,7 +2,10 @@ package name.nikiforo.ssimm
 
 import scala.annotation.tailrec
 import scala.collection.mutable
+import scala.concurrent.duration.Duration
+import scala.concurrent.{Await, Future}
 import scala.util.Random
+import scala.concurrent.ExecutionContext.Implicits.global
 
 case class Center(r: Float, g: Float, b: Float) {
   private val epsilon = 0.5
@@ -33,6 +36,17 @@ class Sum {
   def getCenter =
     if(length == 0) None
     else Some(Center(r.toFloat / length, g.toFloat / length, b.toFloat / length))
+
+  def add(other: Sum): Sum = {
+    val newSum = new Sum()
+
+    newSum.r = this.r + other.r
+    newSum.g = this.g + other.g
+    newSum.b = this.b + other.b
+    newSum.length = this.length + other.length
+
+    newSum
+  }
 }
 
 case class Cluster(center: Center, sum: Sum)
@@ -119,39 +133,60 @@ object KmeansClusterer {
   import KMeansClusterHelper.ColorChannelAmount
   import KMeansClusterHelper.chooseInitialCenters
 
+  val MaxParallelizm = 4
+
   def cluster[T](clusterAmount: Int, points: Array[Int]): Seq[Center] = {
     val length = points.length
     val pixelLength = length / ColorChannelAmount
 
     @tailrec
-    def iterate(iteration: Int, centers: Seq[Center]): Seq[Center] = {
-      val clusters = centers.map { c =>
-        Cluster(c, new Sum())
+    def iterate(centers: Seq[Center], arrays: Seq[Array[Int]], arrayLength: Int): Seq[Center] = {
+      val sumsFs = arrays.map { array =>
+        Future {
+          val clusters = centers.map { c =>
+            Cluster(c, new Sum())
+          }
+
+          for {
+            i <- 0 until arrayLength
+            ind = i * 3
+          } {
+            val r = points(ind)
+            val g = points(ind + 1)
+            val b = points(ind + 2)
+
+            val closest = clusters.minBy { _.center.manhDist(r, g, b) }
+            closest.sum.update(r, g, b)
+          }
+
+          clusters.map(_.sum)
+        }
       }
 
-      for {
-        i <- 0 until pixelLength
-        ind = i * 3
-      } {
-        val r = points(ind)
-        val g = points(ind + 1)
-        val b = points(ind + 2)
-
-        val closest = clusters.minBy { _.center.manhDist(r, g, b) }
-        closest.sum.update(r, g, b)
+      val result = Future.sequence(sumsFs).map { sumsFromFs =>
+        sumsFromFs.reduce[Seq[Sum]] { case (lSums, rSums) =>
+          lSums.zip(rSums).map{ case (l, r) => l.add(r) }
+        }
       }
 
-      val newCenters = clusters.map(cluster => cluster.sum.getCenter.getOrElse(cluster.center))
+      val sums = Await.result(result, Duration.Inf)
+      val newCenters = sums.zip(centers).map { case (sum, center) => sum.getCenter.getOrElse(center) }
 
       val allNotMoved = centers.zip(newCenters).forall{ case (prev, curr) => prev.isClose(curr) }
-      if(allNotMoved) {
-        println("it: " + iteration)
-        newCenters
-      }
-      else iterate(iteration + 1, newCenters)
+      if(allNotMoved) newCenters
+      else iterate(newCenters, arrays, arrayLength)
+    }
+
+    val divideKoef = Stream.from(MaxParallelizm, -1).filter(i => length % (i * 3) == 0).head
+    val splittedLength = length / divideKoef
+    val arrays = for { i <- 0 until divideKoef } yield {
+      val array = new Array[Int](splittedLength)
+      val start = i * splittedLength
+      System.arraycopy(points, start, array, 0, splittedLength)
+      array
     }
 
     val initialCenters = chooseInitialCenters(clusterAmount, points)
-    iterate(0, initialCenters)
+    iterate(initialCenters, arrays, pixelLength)
   }
 }

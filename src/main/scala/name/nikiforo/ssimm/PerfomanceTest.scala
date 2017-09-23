@@ -40,7 +40,7 @@ object PerfomanceTest {
   }
 
   def test(): PerfomanceTest = {
-    val path = Paths.get("src/main/resources/aGirl.jpg")
+    val path = Paths.get("src/main/resources/lop2.jpg")
     val tests = for(i <- 1 to 10) yield {
       println(s"measuring $i")
       measure(path)
