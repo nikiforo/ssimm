@@ -1,4 +1,10 @@
-PerfomanceTest(1506023456378,aGirl.jpg,Some(20),Some(28),Some(530),Some(12951))
-PerfomanceTest(1506024736138,lop2.jpg,Some(77),Some(105),Some(2643),Some(117256))
-PerfomanceTest(1506106906928,aGirl.jpg,Some(12),Some(22),Some(669),Some(4518))
-PerfomanceTest(1506107514335,lop2.jpg,Some(79),Some(160),Some(3128),Some(49720))
+bea7e52e198760e748441bc4edda22f62a9199ec PerfomanceTest(1506023456378,aGirl.jpg,Some(20),Some(28),Some(530),Some(12951))
+bea7e52e198760e748441bc4edda22f62a9199ec PerfomanceTest(1506024736138,lop2.jpg,Some(77),Some(105),Some(2643),Some(117256))
+c2b9fdd647ae4cc3d7835a6c4e27445f50dee8d4 PerfomanceTest(1506106906928,aGirl.jpg,Some(12),Some(22),Some(669),Some(4518))
+c2b9fdd647ae4cc3d7835a6c4e27445f50dee8d4 PerfomanceTest(1506107514335,lop2.jpg,Some(79),Some(160),Some(3128),Some(49720))
+c2b9fdd647ae4cc3d7835a6c4e27445f50dee8d4 PerfomanceTest(1506108502513,lop2.jpg,Some(79),Some(117),Some(2963),Some(45160))
+c2b9fdd647ae4cc3d7835a6c4e27445f50dee8d4 PerfomanceTest(1506109111342,lop2.jpg,Some(77),Some(122),Some(2796),Some(28559)) // average 40 iterations
+HEAD PerfomanceTest(1506166566857,lop2.jpg,Some(81),Some(125),Some(3017),Some(26584)) // average 30 iterations
+c2b9fdd647ae4cc3d7835a6c4e27445f50dee8d4 PerfomanceTest(1506169351697,lop2.jpg,Some(94),Some(138),Some(2916),Some(30609)) // average 42 iterations
+HEAD PerfomanceTest(1506169637885,lop2.jpg,Some(80),Some(122),Some(2840),Some(19328)) // average 30 iterations
+HEAD PerfomanceTest(1506169756684,aGirl.jpg,Some(13),Some(22),Some(555),Some(3177)) //average 27 iterations

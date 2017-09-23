@@ -9,42 +9,32 @@ trait Filter {
   def apply(image: Image)(implicit resultContainer: ResultContainer): Image
 }
 
-trait KMeansFilter extends Filter {
-  protected def clusterAmount: Int
-
-  override def apply(image: Image)(implicit resultContainer: ResultContainer): Image = {
+object KMeansFilterHelper {
+  def convertToKMeansFormat(image: Image): Array[Int] = {
     val seq = for {
       x <- 0 until image.width
       y <- 0 until image.height
       pixel = image(x,y)
       (a, r, g, b) = pixel.argb
-      colorComponent <- Seq(a, r, g, b)
+      colorComponent <- Seq(r, g, b)
     } yield colorComponent.asInstanceOf[Int]
 
-    val x = KmeansClasterizator.clasterize(clusterAmount, seq.toArray)
+    seq.toArray
+  }
+}
 
-    val getValue = (for
-    {
-      cluster <- x
-      c = cluster.center
-      a = c.a; r = c.r; g = c.g; b = c.b
-      pixel = getPixel(a.toInt, r.toInt, g.toInt, b.toInt)
-      i <- 0 until (cluster.points.length / 4)
-      ind = i * 4
-      aPoint = cluster.points(ind)
-      rPoint = cluster.points(ind + 1)
-      gPoint = cluster.points(ind + 2)
-      bPoint = cluster.points(ind + 3)
-    } yield getPixel(aPoint, rPoint, gPoint, bPoint) -> pixel).toMap
+class KMeansFilterHelper(centers: Seq[Center]) extends SinglePixelFilter {
+  override def transform(pixel: Pixel) = {
+    val (a, r, g, b) = pixel.argb
+    val closest = centers.minBy(_.manhDist(r, g, b))
+    getPixel(a, closest.rInt, closest.gInt, closest.bInt)
+  }
+}
 
-    val mutableImg = resultContainer(image.width, image.height)
-    for {
-      x <- 0 until image.width
-      y <- 0 until image.height
-    } {
-      mutableImg.set(x, y, getValue(image(x, y)))
-    }
-
-    mutableImg
+class KMeansFilter(clusterAmount: Int) extends Filter {
+  override def apply(image: Image)(implicit resultContainer: ResultContainer): Image = {
+    val kMeansFormattedImage = KMeansFilterHelper.convertToKMeansFormat(image)
+    val centers = KmeansClusterer.cluster(clusterAmount, kMeansFormattedImage)
+    image.applyFilter(new KMeansFilterHelper(centers))
   }
 }

@@ -27,7 +27,7 @@ object PerfomanceTest {
     val noFilter = getMsec { () => img.applyFilter(NoFilter) }
     val grayAverageFilter = getMsec { () => img.applyFilter(GrayAverageFilter) }
     val gaussian5SlowKernelFilter = getMsec { () => img.applyFilter(Gaussian5SlowKernelFilter) }
-    val kMeansFilter = getMsec { () => img.applyFilter(new KMeansFilter { override protected val clusterAmount = 25 }) }
+    val kMeansFilter = getMsec { () => img.applyFilter(new KMeansFilter(clusterAmount = 25)) }
 
     PerfomanceTest(
       timeMillis = now,
@@ -40,7 +40,7 @@ object PerfomanceTest {
   }
 
   def test(): PerfomanceTest = {
-    val path = Paths.get("src/main/resources/lop2.jpg")
+    val path = Paths.get("src/main/resources/aGirl.jpg")
     val tests = for(i <- 1 to 10) yield {
       println(s"measuring $i")
       measure(path)

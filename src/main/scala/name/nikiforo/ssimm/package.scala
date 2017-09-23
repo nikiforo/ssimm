@@ -46,7 +46,7 @@ package object ssimm {
   }
 
   implicit class ArrayToImage(val array: Array[Pixel]) extends AnyVal {
-    def toImg(w: Int) = {
+    def toImg(w: Int): Image = {
       require(array.length % w == 0)
 
       val h = array.length / w
@@ -57,7 +57,7 @@ package object ssimm {
       }
     }
 
-    def toMutableImg(w: Int) = {
+    def toMutableImg(w: Int): MutableImage = {
       require(array.length % w == 0)
 
       val h = array.length / w

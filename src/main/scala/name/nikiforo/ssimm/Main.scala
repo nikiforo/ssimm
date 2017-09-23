@@ -20,7 +20,7 @@ object Main {
     val red = img.applyFilter(RedComponentFilter)
     val green = img.applyFilter(GreenComponentFilter)
     val blue = img.applyFilter(BlueComponentFilter)
-    val clustered = img.applyFilter(new KMeansFilter { override protected val clusterAmount = 25 })
+    val clustered = img.applyFilter(new KMeansFilter(clusterAmount = 25))
 
     val outputDir = "out"
 
