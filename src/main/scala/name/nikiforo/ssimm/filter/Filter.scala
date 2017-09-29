@@ -38,3 +38,11 @@ class KMeansFilter(clusterAmount: Int) extends Filter {
     image.applyFilter(new KMeansFilterHelper(centers))
   }
 }
+
+class MedianFilter(clusterAmount: Int) extends Filter {
+  override def apply(image: Image)(implicit resultContainer: ResultContainer): Image = {
+    val kMeansFormattedImage = KMeansFilterHelper.convertToKMeansFormat(image)
+    val centers = KMeansClusterHelper.median(clusterAmount, kMeansFormattedImage)
+    image.applyFilter(new KMeansFilterHelper(centers))
+  }
+}

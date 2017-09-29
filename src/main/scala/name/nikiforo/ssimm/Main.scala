@@ -21,6 +21,7 @@ object Main {
     val green = img.applyFilter(GreenComponentFilter)
     val blue = img.applyFilter(BlueComponentFilter)
     val clustered = img.applyFilter(new KMeansFilter(clusterAmount = 25))
+    val medianFiltered = img.applyFilter(new MedianFilter(clusterAmount = 25))
 
     val outputDir = "out"
 
@@ -36,5 +37,6 @@ object Main {
     green.to(Paths.get(outputDir, "green.png"), PNG)
     blue.to(Paths.get(outputDir, "blue.png"), PNG)
     clustered.to(Paths.get(outputDir, "clustered.png"), PNG)
+    medianFiltered.to(Paths.get(outputDir, "median.png"), PNG)
   }
 }

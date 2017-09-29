@@ -55,7 +55,7 @@ object KMeansClusterHelper {
     set.to[Vector]
   }
 
-  private def median(clusterAmount: Int, points: Array[Int]): Seq[Center] = {
+  def median(clusterAmount: Int, points: Array[Int]): Seq[Center] = {
     val length = points.length
     val pixelLength = length / ColorChannelAmount
     val lengthPerCluster = length / clusterAmount
