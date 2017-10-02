@@ -5,7 +5,17 @@ import java.awt.image.BufferedImage
 package object ssimm {
   type Pixel = Int
   type ColorComponent = Int
+  type Coord = (Int, Int)
 
+  val MaxColorValue = 0xff
+  val MinColorValue = 0x00
+  val Black = getPixel(MinColorValue, MinColorValue, MinColorValue)
+  val White = getPixel(MaxColorValue, MaxColorValue, MaxColorValue)
+  val Red = getPixel(MaxColorValue, MinColorValue, MinColorValue)
+  val Green = getPixel(MinColorValue, MaxColorValue, MinColorValue)
+  val Blue = getPixel(MinColorValue, MinColorValue, MaxColorValue)
+
+  /* FIXME: Remove */
   case class SplittedPixel(alpha: ColorComponent, red: ColorComponent, green: ColorComponent, blue: ColorComponent) {
     def argb = (alpha, red, green, blue)
     def this(arg: (ColorComponent, ColorComponent, ColorComponent, ColorComponent)) = this(arg._1, arg._2, arg._3, arg._4)
@@ -19,8 +29,11 @@ package object ssimm {
         math.abs(green - other.green) + math.abs(blue - other.blue)
   }
 
-  def getPixel(alpha: ColorComponent, red: ColorComponent, green: ColorComponent, blue: ColorComponent) =
+  def getPixel(alpha: ColorComponent, red: ColorComponent, green: ColorComponent, blue: ColorComponent): Pixel =
     ((alpha & 0xFF) << 24) | ((red & 0xFF) << 16) | ((green & 0xFF) << 8) | ((blue & 0xFF) << 0)
+
+  def getPixel(red: ColorComponent, green: ColorComponent, blue: ColorComponent): Pixel =
+    getPixel(0xff, red, green, blue)
 
   implicit class PixelWithComponents(val pixel: Pixel) extends AnyVal {
     def argb = (alpha, red, green, blue)
@@ -28,6 +41,10 @@ package object ssimm {
     def red: ColorComponent = (pixel >> 16) & 0x000000FF
     def green: ColorComponent = (pixel >> 8 ) & 0x000000FF
     def blue: ColorComponent = pixel & 0x000000FF
+    def manhattanDistance(other: Pixel) = {
+      math.abs(alpha - other.alpha) + math.abs(red - other.red) +
+        math.abs(green - other.green) + math.abs(blue - other.blue)
+    }
   }
 
   implicit class BufferedAwtToImage(val bi: BufferedImage) extends AnyVal {

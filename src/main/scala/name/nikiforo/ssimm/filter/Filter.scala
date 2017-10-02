@@ -46,3 +46,9 @@ class MedianFilter(clusterAmount: Int) extends Filter {
     image.applyFilter(new KMeansFilterHelper(centers))
   }
 }
+
+class SmoothFilter(colorDiffThreshold: Int, regionSizeThreshold: Int) extends Filter {
+  override def apply(image: Image)(implicit resultContainer: ResultContainer): Image = {
+    Smoother.smooth(image, colorDiffThreshold, regionSizeThreshold)
+  }
+}
