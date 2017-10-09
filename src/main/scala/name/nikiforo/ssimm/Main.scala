@@ -22,6 +22,11 @@ object Main {
     val blue = img.applyFilter(BlueComponentFilter)
     val clustered = img.applyFilter(new KMeansFilter(clusterAmount = 25))
     val medianFiltered = img.applyFilter(new MedianFilter(clusterAmount = 25))
+    val transposed = img.applyFilter(TransposeFilter)
+    val rotatedClockwise = img.applyFilter(RotateClockwiseFilter)
+    val rotatedCounterClockwise = img.applyFilter(RotateCounterClockwiseFilter)
+    val mirrorX = img.applyFilter(MirrorX)
+    val mirrorY = img.applyFilter(MirrorY)
     val medianSmoothFiltered = medianFiltered.applyFilter(new SmoothFilter(colorDiffThreshold = 70, regionSizeThreshold = 30))
 
     val outputDir = "out"
@@ -39,6 +44,11 @@ object Main {
     blue.to(Paths.get(outputDir, "blue.png"), PNG)
     clustered.to(Paths.get(outputDir, "clustered.png"), PNG)
     medianFiltered.to(Paths.get(outputDir, "median.png"), PNG)
+    transposed.to(Paths.get(outputDir, "transpose.png"), PNG)
+    rotatedClockwise.to(Paths.get(outputDir, "rotatedClockwise.png"), PNG)
+    rotatedCounterClockwise.to(Paths.get(outputDir, "rotatedCounterClockwise.png"), PNG)
+    mirrorX.to(Paths.get(outputDir, "mirrorX.png"), PNG)
+    mirrorY.to(Paths.get(outputDir, "mirrorY.png"), PNG)
     medianSmoothFiltered.to(Paths.get(outputDir, "medianSmooth.png"), PNG)
   }
 }

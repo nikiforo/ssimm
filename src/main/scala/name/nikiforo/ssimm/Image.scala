@@ -9,8 +9,8 @@ import name.nikiforo.ssimm.filter.Filter
 
 /** The simplest image representation */
 trait Image {
-  def width: Int
-  def height: Int
+  val width: Int
+  val height: Int
   def apply(x: Int, y: Int): Pixel
   def applyFilter(filter: Filter)(implicit resultContainer: ResultContainer) = filter.apply(this)
 

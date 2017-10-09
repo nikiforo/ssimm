@@ -49,14 +49,14 @@ package object ssimm {
 
   implicit class BufferedAwtToImage(val bi: BufferedImage) extends AnyVal {
     def toImg = new Image {
-      def width = bi.getWidth
-      def height = bi.getHeight
+      val width = bi.getWidth
+      val height = bi.getHeight
       def apply(x: Int, y: Int) = bi.getRGB(x, y) // TYPE_INT_ARGB
     }
 
     def toMutableImg = new MutableImage {
-      def width = bi.getWidth
-      def height = bi.getHeight
+      val width = bi.getWidth
+      val height = bi.getHeight
       def apply(x: Int, y: Int) = bi.getRGB(x, y) // TYPE_INT_ARGB
       def set(x: Int, y: Int, pixel: Pixel) = bi.setRGB(x, y, pixel)
     }
@@ -68,8 +68,8 @@ package object ssimm {
 
       val h = array.length / w
       new Image {
-        def width = w
-        def height = h
+        val width = w
+        val height = h
         def apply(x: Int, y: Int) = array(x * h + y)
       }
     }
@@ -79,8 +79,8 @@ package object ssimm {
 
       val h = array.length / w
       new MutableImage {
-        def width = w
-        def height = h
+        val width = w
+        val height = h
         def apply(x: Int, y: Int) = array(x * h + y)
         def set(x: Int, y: Int, pixel: Pixel) = array(x * h + y) = pixel
       }
@@ -90,14 +90,14 @@ package object ssimm {
   /** Outer array(or arrays) contains arrays, that corresponds to a columns */
   implicit class Array2ToImage(val array: Array[Array[Pixel]]) extends AnyVal {
     def toImg = new Image {
-      def width = array.length
-      def height = array(0).length
+      val width = array.length
+      val height = array(0).length
       def apply(x: Int, y: Int) = array(x)(y)
     }
 
     def toMutableImg = new MutableImage {
-      def width = array.length
-      def height = array(0).length
+      val width = array.length
+      val height = array(0).length
       def apply(x: Int, y: Int) = array(x)(y)
       def set(x: Int, y: Int, pixel: Pixel) = array(x)(y) = pixel
     }
